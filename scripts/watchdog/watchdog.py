@@ -709,7 +709,10 @@ def _run_once(config, state_path, logger, args):
         return
 
     sent = evaluate_and_alert(results, state, config, now, logger, dry_run=args.dry_run)
-    logger.info("alerts sent: %s" if sent else "no alerts sent", sent)
+    if sent:
+        logger.info("alerts sent: %s", sent)
+    else:
+        logger.info("no alerts sent")
 
     state["last_run"] = now.isoformat()
     save_state(state, state_path)
