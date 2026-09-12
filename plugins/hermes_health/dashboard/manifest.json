@@ -1,0 +1,8 @@
+{
+  "name": "hermes-health",
+  "label": "Health",
+  "description": "Pipeline health observer — LLM calls, tool execution, memory sync, computer-use",
+  "icon": "Activity",
+  "version": "0.1.0",
+  "api": "plugin_api.py"
+}
