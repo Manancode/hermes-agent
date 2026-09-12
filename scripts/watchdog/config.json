@@ -1,0 +1,55 @@
+{
+  "_comment": "Hermes External Watchdog Configuration",
+  "_topology": {
+    "mac": ["hermes_desktop", "hermes_gateway", "hermes_backend"],
+    "vps": ["docker", "tdai_memory_core", "memorycore_http_api"],
+    "external": ["hcnsc_api"]
+  },
+
+  "hermes_home": "~/.hermes",
+
+  "gateway": {
+    "heartbeat_file": "~/.hermes/state/gateway.heartbeat",
+    "heartbeat_stale_secs": 90,
+    "health_url": "http://127.0.0.1:8642/health",
+    "health_timeout_secs": 5
+  },
+
+  "vps": {
+    "ssh_host": "64.181.214.10",
+    "ssh_user": "ubuntu",
+    "ssh_key": "~/.ssh/id_rsa_zipmodel",
+    "ssh_timeout_secs": 10,
+    "memorycore_health_url": "http://127.0.0.1:8420/health",
+    "memorycore_health_timeout_secs": 5
+  },
+
+  "hcnsc": {
+    "passive_health_url": "https://portal.nousresearch.com/api/nous/recommended-models",
+    "passive_health_timeout_secs": 10
+  },
+
+  "alerts": {
+    "ntfy": {
+      "enabled": true,
+      "server": "https://ntfy.sh",
+      "topic": "hermes-watchdog-alerts",
+      "token": ""
+    },
+    "telegram": {
+      "enabled": false,
+      "bot_token": "",
+      "chat_id": ""
+    },
+    "slack": {
+      "enabled": true,
+      "webhook_url": "${SLACK_WATCHDOG_WEBHOOK_URL}"
+    },
+    "cooldown_secs": 300,
+    "escalation_secs": 1800,
+    "max_alerts_per_hour": 6
+  },
+
+  "state_file": "~/.hermes/watchdog/state.json",
+  "log_file": "~/.hermes/logs/watchdog.log"
+}
