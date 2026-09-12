@@ -295,13 +295,13 @@ class HealthState:
 
         # Build transition message
         if new_status == HealthStatus.HEALTHY:
-            msg = "Pipeline recovered to healthy"
+            msg = "hermes recovered"
         elif new_status == HealthStatus.DEGRADED:
             count = self.get_error_count_5min()
-            msg = f"Pipeline degraded — {count} errors in {self.ERROR_WINDOW_SECS:.0f}s window"
+            msg = f"hermes degraded, {count} errors in {self.ERROR_WINDOW_SECS:.0f}s window"
         else:
             count = self.get_error_count_5min()
-            msg = f"Pipeline ERROR — {count} errors in {self.ERROR_WINDOW_SECS:.0f}s window"
+            msg = f"hermes down, {count} errors in {self.ERROR_WINDOW_SECS:.0f}s window"
 
         for cb in self._transition_callbacks:
             try:

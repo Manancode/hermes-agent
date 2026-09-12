@@ -153,6 +153,7 @@ def register(ctx: Any) -> None:
         ("on_session_finalize", observer.on_session_finalize),
         ("subagent_start", observer.on_subagent_start),
         ("subagent_stop", observer.on_subagent_stop),
+        ("on_memory_sync", observer.on_memory_sync),
     ]
     for name, fn in hooks:
         ctx.register_hook(name, fn)

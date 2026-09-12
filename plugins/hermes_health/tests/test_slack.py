@@ -21,7 +21,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-_plugin_dir = Path(__file__).resolve().parent.parent.parent
+_plugin_dir = Path(__file__).resolve().parent.parent
 if str(_plugin_dir) not in sys.path:
     sys.path.insert(0, str(_plugin_dir))
 
@@ -95,13 +95,13 @@ class TestSlackEnabled:
 
 class TestSlackPayload:
     def test_recovery_payload(self):
-        payload = _build_slack_payload("recovery", "Pipeline recovered to healthy")
+        payload = _build_slack_payload("recovery", "hermes recovered")
         assert "blocks" in payload
         blocks = payload["blocks"]
 
         header = blocks[0]
         assert header["type"] == "header"
-        assert "RECOVERED" in header["text"]["text"]
+        assert "recovered" in header["text"]["text"]
         assert "\u2705" in header["text"]["text"]
 
         fields = blocks[1]["fields"]
@@ -109,24 +109,24 @@ class TestSlackPayload:
         assert any("info" in f["text"] for f in fields)
 
         detail = blocks[2]
-        assert "Pipeline recovered to healthy" in detail["text"]["text"]
+        assert "hermes recovered" in detail["text"]["text"]
 
         context = blocks[3]
         assert "Timestamp:" in context["elements"][0]["text"]
 
     def test_degraded_payload(self):
-        payload = _build_slack_payload("degraded", "Pipeline degraded — 5 errors")
+        payload = _build_slack_payload("degraded", "hermes degraded, 5 errors in 300s window")
         header_text = payload["blocks"][0]["text"]["text"]
-        assert "DEGRADED" in header_text
+        assert "degraded" in header_text
         assert "\u26a0\ufe0f" in header_text
 
         fields = payload["blocks"][1]["fields"]
         assert any("warning" in f["text"] for f in fields)
 
     def test_error_payload(self):
-        payload = _build_slack_payload("error", "Pipeline ERROR — 15 errors")
+        payload = _build_slack_payload("error", "hermes down, 15 errors in 300s window")
         header_text = payload["blocks"][0]["text"]["text"]
-        assert "DOWN" in header_text
+        assert "down" in header_text
         assert "\U0001f534" in header_text
 
         fields = payload["blocks"][1]["fields"]

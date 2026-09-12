@@ -22,9 +22,9 @@ logger = logging.getLogger(__name__)
 _ENV_WEBHOOK_URL = "HERMES_HEALTH_SLACK_WEBHOOK_URL"
 
 _ALERT_TYPE_MAP = {
-    "recovery": {"emoji": "\u2705", "severity": "info", "status": "RECOVERED"},
-    "degraded": {"emoji": "\u26a0\ufe0f", "severity": "warning", "status": "DEGRADED"},
-    "error": {"emoji": "\U0001f534", "severity": "critical", "status": "DOWN"},
+    "recovery": {"emoji": "\u2705", "severity": "info", "status": "recovered"},
+    "degraded": {"emoji": "\u26a0\ufe0f", "severity": "warning", "status": "degraded"},
+    "error": {"emoji": "\U0001f534", "severity": "critical", "status": "down"},
 }
 
 _COMPONENT = "hermes-pipeline"
@@ -41,7 +41,7 @@ def _build_slack_payload(alert_type: str, message: str) -> dict:
     meta = _ALERT_TYPE_MAP.get(alert_type, {"emoji": "\u2753", "severity": "unknown", "status": alert_type.upper()})
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
 
-    header_text = f"{meta['emoji']} Hermes Health: {meta['status']}"
+    header_text = f"{meta['emoji']} hermes health: {meta['status']}"
 
     blocks = [
         {
