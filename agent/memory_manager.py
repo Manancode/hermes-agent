@@ -499,15 +499,50 @@ class MemoryManager:
         optional_kwargs = {"messages": messages, "turn_author": turn_author}
 
         def _sync(provider: MemoryProvider) -> None:
+            import time as _time
             kwargs: Dict[str, Any] = {"session_id": session_id}
             for keyword, value in optional_kwargs.items():
                 if value is not None and self._provider_sync_accepts(provider, keyword):
                     kwargs[keyword] = value
-            provider.sync_turn(clean_user_content, assistant_content, **kwargs)
+            t0 = _time.monotonic()
+            error_msg: Optional[str] = None
+            success = True
+            try:
+                provider.sync_turn(clean_user_content, assistant_content, **kwargs)
+            except Exception as e:
+                success = False
+                error_msg = str(e)
+                raise
+            finally:
+                duration_ms = int((_time.monotonic() - t0) * 1000)
+                self._fire_memory_sync_hook(
+                    provider_name=provider.name,
+                    success=success,
+                    duration_ms=duration_ms,
+                    error=error_msg,
+                    session_id=session_id,
+                )
 
         self._submit_background(
             lambda: self._each_provider("sync_turn failed", _sync, level=logging.WARNING, providers=providers)
         )
+
+    def _fire_memory_sync_hook(self, *, provider_name: str, success: bool,
+                               duration_ms: int, error: Optional[str],
+                               session_id: str) -> None:
+        """Dispatch the on_memory_sync plugin hook. Failures are logged and swallowed."""
+        try:
+            from hermes_cli.lifecycle import invoke_hook
+            invoke_hook(
+                "on_memory_sync",
+                provider_name=provider_name,
+                success=success,
+                duration_ms=duration_ms,
+                error=error,
+                session_id=session_id,
+            )
+        except Exception as e:
+            logger.debug("on_memory_sync hook dispatch failed: %s", e)
 
     def _submit_background(self, fn, *, kind: str = "write") -> None:
         """Queue ``fn`` on the serialized worker (created lazily; None once shutting down) and track its

@@ -192,6 +192,11 @@ VALID_HOOKS: Set[str] = {
     # IGNORED in v1 — a plugin returning a directive-shaped dict gets a debug log so future block/rewrite
     # adopters are discoverable once the middleware variant ships against the #64231 taxonomy.
     "pre_command",
+    # on_memory_sync: AFTER a memory provider's sync_turn() completes. Observer-only; returns
+    # ignored. Kwargs: provider_name (str), success (bool), duration_ms (int), error (str|None),
+    # session_id (str). Fired inside the background sync worker — never blocks the turn path.
+    # Provider exceptions remain isolated; the hook fires for every outcome (success, error, timeout).
+    "on_memory_sync",
 }
 
 # Hooks whose directive the shell-hook response parser has no channel for. VALID_HOOKS doubles as
